@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/common"
+	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/controller"
 	intModels "github.com/ahmad-khatib0-org/megacommerce-inventory/pkg/models"
 	com "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/common/v1"
 	"github.com/ahmad-khatib0-org/megacommerce-shared-go/pkg/logger"
@@ -49,9 +50,18 @@ func RunServer(s *ServerArgs) error {
 
 	srv.initSharedConfig()
 	srv.initTrans()
-
 	srv.initDB()
 	defer srv.dbConn.Close()
+
+	_, err = controller.NewController(&controller.ControllerArgs{
+		Config:         srv.configFn,
+		TracerProvider: srv.tracerProvider,
+		Metrics:        srv.metrics,
+		Log:            srv.log,
+	})
+	if err != nil {
+		srv.errors <- err
+	}
 
 	err = <-srv.errors
 	if err != nil {

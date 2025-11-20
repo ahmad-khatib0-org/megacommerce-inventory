@@ -13,7 +13,7 @@ func (cc *CommonClient) TranslationsGet() (map[string]*com.TranslationElements, 
 	defer cancel()
 
 	ie := func(err error, msg string) *models.InternalError {
-		return &models.InternalError{Path: "user.common.TranslationsGet", Err: err, Msg: msg}
+		return &models.InternalError{Path: "inventory.common.TranslationsGet", Err: err, Msg: msg}
 	}
 
 	res, err := cc.client.TranslationsGet(ctx, &com.TranslationsGetRequest{})

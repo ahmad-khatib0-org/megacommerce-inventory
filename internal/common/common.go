@@ -58,7 +58,7 @@ func (cc *CommonClient) initCommonClient() *models.InternalError {
 		return ie(err, "failed to connect to the shared common service")
 	}
 
-	fmt.Println("user service connected to common service at: " + target)
+	fmt.Println("inventory service connected to common service at: " + target)
 	cc.client = com.NewCommonServiceClient(conn)
 	cc.conn = conn
 

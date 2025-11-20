@@ -33,7 +33,7 @@ func (cc *CommonClient) ConfigGet() (*com.Config, *models.InternalError) {
 	return nil, nil
 }
 
-// TODO: complete this listener
+// ConfigListener  TODO: complete this listener
 func (cc *CommonClient) ConfigListener(clientID string) *models.InternalError {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

@@ -3,11 +3,12 @@ module github.com/ahmad-khatib0-org/megacommerce-inventory
 go 1.24.3
 
 require (
-	github.com/ahmad-khatib0-org/megacommerce-proto v0.4.16
-	github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.11
+	github.com/ahmad-khatib0-org/megacommerce-proto v0.4.19
+	github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.15
 	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.1.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/spf13/viper v1.21.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	go.opentelemetry.io/otel/sdk v1.38.0
 	google.golang.org/grpc v1.77.0
 )
@@ -23,7 +24,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
