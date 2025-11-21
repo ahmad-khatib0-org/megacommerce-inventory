@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	pb "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/inventory/v1"
 )
 
@@ -40,3 +42,25 @@ func GetInventoryReservationItemStatus(status pb.InventoryReservationItemStatus)
 	}
 }
 
+func InventoryReserveRequestAuditable(req *pb.InventoryReserveRequest) map[string]any {
+	if req == nil {
+		return map[string]any{}
+	}
+
+	items := make([]map[string]any, len(req.Items))
+	for i, item := range req.Items {
+		items[i] = map[string]any{
+			"product_id": item.ProductId,
+			"variant_id": item.VariantId,
+			"sku":        item.Sku,
+			"quantity":   item.Quantity,
+		}
+	}
+
+	return map[string]any{
+		"order_id":    req.OrderId,
+		"items":       items,
+		"ttl_seconds": req.TtlSeconds,
+		"expires_at":  time.Now().Add(time.Duration(req.TtlSeconds) * time.Second).Unix(),
+	}
+}

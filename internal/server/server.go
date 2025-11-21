@@ -8,6 +8,8 @@ import (
 
 	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/common"
 	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/controller"
+	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/store"
+	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/store/dbstore"
 	intModels "github.com/ahmad-khatib0-org/megacommerce-inventory/pkg/models"
 	com "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/common/v1"
 	"github.com/ahmad-khatib0-org/megacommerce-shared-go/pkg/logger"
@@ -27,6 +29,7 @@ type Server struct {
 	metrics        *grpcprom.ServerMetrics
 	log            *logger.Logger
 	dbConn         *pgxpool.Pool
+	dbStore        store.InventoryDBStore
 }
 
 type ServerArgs struct {
@@ -46,12 +49,10 @@ func RunServer(s *ServerArgs) error {
 		srv.errors <- err
 	}
 
-	ctx := context.Background()
-
 	srv.initSharedConfig()
 	srv.initTrans()
 	srv.initDB()
-	defer srv.dbConn.Close()
+	srv.dbStore = dbstore.NewInventoryStore(srv.dbConn)
 
 	_, err = controller.NewController(&controller.ControllerArgs{
 		Config:         srv.configFn,
@@ -66,10 +67,20 @@ func RunServer(s *ServerArgs) error {
 	err = <-srv.errors
 	if err != nil {
 		s.Log.Infof("an error occurred %v ", err)
-		if err := srv.tracerProvider.Shutdown(ctx); err != nil {
-			s.Log.Errorf("failed to shutdown tracer provider %v", err)
-		}
+	}
+	srv.shutdown()
+	return err
+}
+
+func (s *Server) shutdown() {
+	ctx := context.Background()
+	if s.dbConn != nil {
+		s.dbConn.Close()
 	}
 
-	return err
+	if s.tracerProvider != nil {
+		if err := s.tracerProvider.Shutdown(ctx); err != nil {
+			s.log.Errorf("failed to shutdown tracer provider %v", err)
+		}
+	}
 }
