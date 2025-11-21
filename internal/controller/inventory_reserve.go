@@ -60,14 +60,15 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 	// Create reservation record
 	reservationID := utils.NewID()
 	reservationToken := "res_" + utils.NewID()
-	if err := c.store.InventoryReservationCreate(modelsCtx, tx, &pb.InventoryReservation{
+	err = c.store.InventoryReservationCreate(modelsCtx, tx, &pb.InventoryReservation{
 		Id:               reservationID,
 		ReservationToken: reservationToken,
 		OrderId:          req.GetOrderId(),
 		Status:           intModels.GetInventoryReservationStatus(pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RESERVED),
 		ExpiresAt:        expiresAt,
 		CreatedAt:        time.Now().Unix(),
-	}); err != nil {
+	})
+	if err != nil {
 		return internalErr(err, "failed to create reservation", tx)
 	}
 
@@ -85,12 +86,12 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 	reservationItems := make([]*pb.InventoryReservationListItem, 0, len(req.GetItems()))
 	for _, item := range req.GetItems() {
 		// Check inventory availability
-		inventory, err := c.store.InventoryItemGetByProductVariant(modelsCtx, tx, item.GetProductId(), item.GetVariantId())
-		if err != nil {
-			if err.ErrType == models.DBErrorTypeNoRows {
+		inventory, errDB := c.store.InventoryItemGetByProductVariant(modelsCtx, tx, item.GetProductId(), item.GetVariantId())
+		if errDB != nil {
+			if errDB.ErrType == models.DBErrorTypeNoRows {
 				key := fmt.Sprintf("%s.%s", item.GetProductId(), item.GetVariantId())
 				errors := models.AppErrorErrorsArgs{
-					Err: err,
+					Err: errDB,
 					ErrorsInternal: map[string]*models.AppErrorError{
 						key: {ID: "orders.items.not_found_in_inventory"},
 					},
@@ -99,13 +100,13 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 				return errBuilder(ai, tx)
 			}
 		} else {
-			return internalErr(err, "failed to query inventory_items table", tx)
+			return internalErr(errDB, "failed to query inventory_items table", tx)
 		}
 
 		if inventory.QuantityAvailable == 0 {
 			key := fmt.Sprintf("%s.%s", item.GetProductId(), item.GetVariantId())
 			ei := map[string]*models.AppErrorError{key: {ID: "orders.items.out_of_stock_for_variant"}}
-			errors := models.AppErrorErrorsArgs{Err: err, ErrorsInternal: ei}
+			errors := models.AppErrorErrorsArgs{ErrorsInternal: ei}
 			ai := models.NewAppError(ctxErr.Ctx, path, "orders.items.out_of_stock", nil, "", int(codes.Aborted), &errors)
 			return errBuilder(ai, tx)
 		}
@@ -115,24 +116,24 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 		}
 
 		// Reserve the inventory
-		reserved, err := c.store.InventoryItemReserve(modelsCtx, tx, inventory.Id, int(item.GetQuantity()))
-		if err != nil {
-			return internalErr(err, "failed to reserve inventory", tx)
+		reserved, errDB := c.store.InventoryItemReserve(modelsCtx, tx, inventory.Id, int(item.GetQuantity()))
+		if errDB != nil {
+			return internalErr(errDB, "failed to reserve inventory", tx)
 		}
 		if !reserved {
 			return partiallyErr(item.GetProductId(), item.GetVariantId(), uint32(inventory.QuantityAvailable))
 		}
 
 		// Create reservation item record
-		err = c.store.InventoryReservationItemCreate(modelsCtx, tx, &pb.InventoryReservationItem{
+		errDB = c.store.InventoryReservationItemCreate(modelsCtx, tx, &pb.InventoryReservationItem{
 			Id:              utils.NewID(),
 			ReservationId:   reservationID,
 			InventoryItemId: inventory.Id,
 			Quantity:        int32(item.GetQuantity()),
 			CreatedAt:       utils.TimeGetMillis(),
 		})
-		if err != nil {
-			return internalErr(err, "failed to create a reservation item", tx)
+		if errDB != nil {
+			return internalErr(errDB, "failed to create a reservation item", tx)
 		}
 
 		// Add successfully reserved item to response
@@ -154,7 +155,7 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 	}
 
 	// Commit transaction
-	if err = tx.Commit(modelsCtx.Context); err != nil {
+	if err := tx.Commit(modelsCtx.Context); err != nil {
 		return internalErr(err, "failed to commit the overall reservation transaction", tx)
 	}
 
