@@ -42,6 +42,21 @@ func GetInventoryReservationItemStatus(status pb.InventoryReservationItemStatus)
 	}
 }
 
+func GetInventoryUpdateOperation(operation pb.InventoryUpdateOperation) string {
+	switch operation {
+	case pb.InventoryUpdateOperation_INVENTORY_UPDATE_OPERATION_SET:
+		return "SET"
+	case pb.InventoryUpdateOperation_INVENTORY_UPDATE_OPERATION_ADD:
+		return "ADD"
+	case pb.InventoryUpdateOperation_INVENTORY_UPDATE_OPERATION_SUBTRACT:
+		return "SUBTRACT"
+	case pb.InventoryUpdateOperation_INVENTORY_UPDATE_OPERATION_UNSPECIFIED:
+		fallthrough
+	default:
+		return "UNSPECIFIED"
+	}
+}
+
 func InventoryReserveRequestAuditable(req *pb.InventoryReserveRequest) map[string]any {
 	if req == nil {
 		return map[string]any{}
@@ -62,5 +77,27 @@ func InventoryReserveRequestAuditable(req *pb.InventoryReserveRequest) map[strin
 		"items":       items,
 		"ttl_seconds": req.TtlSeconds,
 		"expires_at":  time.Now().Add(time.Duration(req.TtlSeconds) * time.Second).Unix(),
+	}
+}
+
+func InventoryUpdateRequestAuditable(req *pb.InventoryUpdateRequest) map[string]any {
+	if req == nil {
+		return map[string]any{}
+	}
+
+	items := make([]map[string]any, len(req.Items))
+	for i, item := range req.Items {
+		items[i] = map[string]any{
+			"product_id": item.ProductId,
+			"variant_id": item.VariantId,
+			"sku":        item.Sku,
+			"operation":  GetInventoryUpdateOperation(item.Operation),
+			"quantity":   item.Quantity,
+		}
+	}
+
+	return map[string]any{
+		"items":  items,
+		"reason": req.Reason,
 	}
 }

@@ -3,6 +3,9 @@ package models
 
 const (
 	EventNameInventoryReserve = "inventory_reserve"
+	EventNameInventoryRelease = "inventory_release"
+	EventNameInventoryGet     = "inventory_get"
+	EventNameInventoryUpdate  = "inventory_update"
 )
 
 type Config struct {

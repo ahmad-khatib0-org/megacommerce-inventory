@@ -30,4 +30,8 @@ type InventoryDBStore interface {
 	InventoryReservationItemCreate(ctx *models.Context, tx pgx.Tx, params *pb.InventoryReservationItem) *models.DBError
 	// InventoryReservationItemsGetByReservationID gets all items for a reservation
 	InventoryReservationItemsGetByReservationID(ctx *models.Context, tx pgx.Tx, reservationID string) ([]*pb.InventoryReservationItem, *models.DBError)
+	// InventoryItemUpdate updates an inventory item
+	InventoryItemUpdate(ctx *models.Context, tx pgx.Tx, id string, quantityTotal int, quantityReserved int32, quantityAvailable int) *models.DBError
+	// InventoryMovementCreate creates a new inventory movement
+	InventoryMovementCreate(ctx *models.Context, tx pgx.Tx, params *pb.InventoryMovement) *models.DBError
 }

@@ -153,3 +153,28 @@ func (is *InventoryStore) InventoryItemRelease(ctx *models.Context, tx pgx.Tx, i
 
 	return true, nil
 }
+
+// InventoryItemUpdate updates an inventory item
+func (is *InventoryStore) InventoryItemUpdate(ctx *models.Context, tx pgx.Tx, id string, quantityTotal int, quantityReserved int32, quantityAvailable int) *models.DBError {
+	stmt := `
+		UPDATE inventory_items 
+		SET 
+			quantity_total = $1,
+			quantity_reserved = $2,
+			quantity_available = $3,
+			updated_at = $4
+		WHERE id = $5
+  `
+
+	_, err := tx.Exec(
+		ctx.Ctx(),
+		stmt,
+		quantityTotal,
+		quantityReserved,
+		quantityAvailable,
+		utils.TimeGetMillis(),
+		id,
+	)
+
+	return models.HandleDBError(ctx, err, "inventory.store.InventoryItemUpdate", tx)
+}
