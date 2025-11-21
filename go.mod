@@ -3,8 +3,8 @@ module github.com/ahmad-khatib0-org/megacommerce-inventory
 go 1.24.3
 
 require (
-	github.com/ahmad-khatib0-org/megacommerce-proto v0.4.19
-	github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.15
+	github.com/ahmad-khatib0-org/megacommerce-proto v0.4.21
+	github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.17
 	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.1.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/spf13/viper v1.21.0

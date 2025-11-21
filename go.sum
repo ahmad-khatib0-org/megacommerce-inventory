@@ -2,8 +2,14 @@ github.com/ahmad-khatib0-org/megacommerce-proto v0.4.18 h1:EC+mq10Nli82fePepyNqL
 github.com/ahmad-khatib0-org/megacommerce-proto v0.4.18/go.mod h1:SlGKyd2+oVzcuzhBg6yzo4bUufJ0LVrF/oXK9aFaJwg=
 github.com/ahmad-khatib0-org/megacommerce-proto v0.4.19 h1:AngE3ASvP+yHkdR4dYManJhnpwUPuLGxsRdTMT2ZSKk=
 github.com/ahmad-khatib0-org/megacommerce-proto v0.4.19/go.mod h1:SlGKyd2+oVzcuzhBg6yzo4bUufJ0LVrF/oXK9aFaJwg=
+github.com/ahmad-khatib0-org/megacommerce-proto v0.4.21 h1:YuGVDI3vcOXQUFMALdimOzTlDaXjwK4jljHyJgTC5as=
+github.com/ahmad-khatib0-org/megacommerce-proto v0.4.21/go.mod h1:SlGKyd2+oVzcuzhBg6yzo4bUufJ0LVrF/oXK9aFaJwg=
 github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.15 h1:Wbs3qzXOyhGZPTAv7U5mWEsYhIHt70ll1Py9NFGK1P4=
 github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.15/go.mod h1:/Hvfq9uUfjOx0AIg5FYD1I37f0yRJbkkJCgsMSwnSZk=
+github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.16 h1:ZNY37I9MO8t1xVmYWa/XjC+l6dN5yZhPQBbWCWdciwM=
+github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.16/go.mod h1:/Hvfq9uUfjOx0AIg5FYD1I37f0yRJbkkJCgsMSwnSZk=
+github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.17 h1:5MbNcYwIjkHpuOguZlvjkFCnEOd7tpShyWkL9CdmFXk=
+github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.17/go.mod h1:IRj0OGBPXuCiFjRNwBekFRhidZ95NlBLjOz+DjqSuIU=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/brianvoe/gofakeit/v7 v7.9.0 h1:6NsaMy9D5ZKVwIZ1V8L//J2FrOF3546FcXDElWLx994=
