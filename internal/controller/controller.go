@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/store"
 	common "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/common/v1"
 	pb "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/inventory/v1"
 	"github.com/ahmad-khatib0-org/megacommerce-shared-go/pkg/logger"
@@ -24,6 +25,7 @@ type Controller struct {
 	metrics        *grpcprom.ServerMetrics
 	log            *logger.Logger
 	http           *http.Client
+	store          store.InventoryDBStore
 }
 
 type ControllerArgs struct {
@@ -31,6 +33,7 @@ type ControllerArgs struct {
 	TracerProvider *sdktrace.TracerProvider
 	Metrics        *grpcprom.ServerMetrics
 	Log            *logger.Logger
+	DBStore        store.InventoryDBStore
 }
 
 func NewController(ca *ControllerArgs) (*Controller, *models.InternalError) {
@@ -39,6 +42,7 @@ func NewController(ca *ControllerArgs) (*Controller, *models.InternalError) {
 		tracerProvider: ca.TracerProvider,
 		metrics:        ca.Metrics,
 		log:            ca.Log,
+		store:          ca.DBStore,
 	}
 
 	c.http = utils.GetHTTPClient()

@@ -26,4 +26,6 @@ type InventoryDBStore interface {
 	//
 	// quantity we are about to release is bigger than the current quantity_reserved value!
 	InventoryItemRelease(ctx *models.Context, tx pgx.Tx, id string, quantity int32) (bool, *models.DBError)
+	// InventoryReservationItemCreate creates a new reservation item
+	InventoryReservationItemCreate(ctx *models.Context, tx pgx.Tx, params *pb.InventoryReservationItem) *models.DBError
 }
