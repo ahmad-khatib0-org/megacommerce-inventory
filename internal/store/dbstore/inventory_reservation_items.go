@@ -35,16 +35,22 @@ func (is *InventoryStore) InventoryReservationItemCreate(ctx *models.Context, tx
 func (is *InventoryStore) InventoryReservationItemsGetByReservationID(ctx *models.Context, tx pgx.Tx, reservationID string) ([]*pb.InventoryReservationItem, *models.DBError) {
 	stmt := `
 		SELECT 
-			id, 
-			reservation_id, 
-			inventory_item_id, 
-			quantity, 
+			id,
+			reservation_id,
+			inventory_item_id,
+			quantity,
 			created_at
 		FROM inventory_reservation_items
 		WHERE reservation_id = $1
   `
 
-	rows, err := tx.Query(ctx.Ctx(), stmt, reservationID)
+	var rows pgx.Rows
+	var err error
+	if tx != nil {
+		rows, err = tx.Query(ctx.Context, stmt, reservationID)
+	} else {
+		rows, err = is.db.Query(ctx.Context, stmt, reservationID)
+	}
 	if err != nil {
 		return nil, models.HandleDBError(ctx, err, "inventory.store.InventoryReservationItemsGetByReservationID", tx)
 	}

@@ -24,7 +24,13 @@ func (is *InventoryStore) InventoryReservationGetByToken(ctx *models.Context, tx
 
 	var ir pb.InventoryReservation
 	var updatedAt int64
-	err := tx.QueryRow(ctx.Ctx(), stmt, token).Scan(
+	var row pgx.Row
+	if tx != nil {
+		row = tx.QueryRow(ctx.Context, stmt, token)
+	} else {
+		row = is.db.QueryRow(ctx.Context, stmt, token)
+	}
+	err := row.Scan(
 		&ir.Id,
 		&ir.ReservationToken,
 		&ir.OrderId,

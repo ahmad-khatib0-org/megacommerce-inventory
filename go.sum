@@ -12,6 +12,8 @@ github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.16 h1:ZNY37I9MO8t1xVmYW
 github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.16/go.mod h1:/Hvfq9uUfjOx0AIg5FYD1I37f0yRJbkkJCgsMSwnSZk=
 github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.17 h1:5MbNcYwIjkHpuOguZlvjkFCnEOd7tpShyWkL9CdmFXk=
 github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.17/go.mod h1:IRj0OGBPXuCiFjRNwBekFRhidZ95NlBLjOz+DjqSuIU=
+github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.18 h1:j3kEkUfgYw5nCdQT+h1ACmB2W3xEWwF7n/dDzqfG56E=
+github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.18/go.mod h1:IRj0OGBPXuCiFjRNwBekFRhidZ95NlBLjOz+DjqSuIU=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/brianvoe/gofakeit/v7 v7.9.0 h1:6NsaMy9D5ZKVwIZ1V8L//J2FrOF3546FcXDElWLx994=

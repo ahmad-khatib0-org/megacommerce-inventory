@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strings"
 	"time"
 
 	pb "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/inventory/v1"
@@ -27,6 +28,25 @@ func GetInventoryReservationStatus(status pb.InventoryReservationStatus) string 
 	}
 }
 
+func GetInventoryReservationStatusFromString(statusStr string) pb.InventoryReservationStatus {
+	switch strings.ToUpper(statusStr) {
+	case "RESERVED":
+		return pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RESERVED
+	case "PARTIALLY_RESERVED":
+		return pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_PARTIALLY_RESERVED
+	case "NOT_RESERVED":
+		return pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_NOT_RESERVED
+	case "PENDING":
+		return pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_PENDING
+	case "RELEASED":
+		return pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RELEASED
+	case "FULFILLED":
+		return pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_FULFILLED
+	default:
+		return pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_UNSPECIFIED
+	}
+}
+
 func GetInventoryReservationItemStatus(status pb.InventoryReservationItemStatus) string {
 	switch status {
 	case pb.InventoryReservationItemStatus_INVENTORY_RESERVATION_ITEM_STATUS_RESERVED:
@@ -39,6 +59,19 @@ func GetInventoryReservationItemStatus(status pb.InventoryReservationItemStatus)
 		fallthrough
 	default:
 		return "UNSPECIFIED"
+	}
+}
+
+func GetInventoryReservationItemStatusFromString(statusStr string) pb.InventoryReservationItemStatus {
+	switch strings.ToUpper(statusStr) {
+	case "RESERVED":
+		return pb.InventoryReservationItemStatus_INVENTORY_RESERVATION_ITEM_STATUS_RESERVED
+	case "NOT_RESERVED":
+		return pb.InventoryReservationItemStatus_INVENTORY_RESERVATION_ITEM_STATUS_NOT_RESERVED
+	case "OUT_OF_STOCK":
+		return pb.InventoryReservationItemStatus_INVENTORY_RESERVATION_ITEM_STATUS_OUT_OF_STOCK
+	default:
+		return pb.InventoryReservationItemStatus_INVENTORY_RESERVATION_ITEM_STATUS_UNSPECIFIED
 	}
 }
 

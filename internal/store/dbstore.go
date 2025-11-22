@@ -11,6 +11,8 @@ import (
 
 type InventoryDBStore interface {
 	GetTx(ctx context.Context, opts pgx.TxOptions) (pgx.Tx, *models.DBError)
+	// InventoryReservationGetByToken gets a reservation by its token,
+	// you can pass nil for the tx argument, and a normal db query will be used
 	InventoryReservationGetByToken(ctx *models.Context, tx pgx.Tx, token string) (*pb.InventoryReservation, *models.DBError)
 	InventoryReservationCreate(ctx *models.Context, tx pgx.Tx, params *pb.InventoryReservation) *models.DBError
 	InventoryReservationUpdateStatus(ctx *models.Context, tx pgx.Tx, id string, status string) *models.DBError
@@ -29,9 +31,12 @@ type InventoryDBStore interface {
 	// InventoryReservationItemCreate creates a new reservation item
 	InventoryReservationItemCreate(ctx *models.Context, tx pgx.Tx, params *pb.InventoryReservationItem) *models.DBError
 	// InventoryReservationItemsGetByReservationID gets all items for a reservation
+	// you can pass nil for the tx argument, and a normal db query will be used
 	InventoryReservationItemsGetByReservationID(ctx *models.Context, tx pgx.Tx, reservationID string) ([]*pb.InventoryReservationItem, *models.DBError)
 	// InventoryItemUpdate updates an inventory item
 	InventoryItemUpdate(ctx *models.Context, tx pgx.Tx, id string, quantityTotal int, quantityReserved int32, quantityAvailable int) *models.DBError
 	// InventoryMovementCreate creates a new inventory movement
 	InventoryMovementCreate(ctx *models.Context, tx pgx.Tx, params *pb.InventoryMovement) *models.DBError
+	// InventoryItemGetByIDs gets the inventory items for the given ids
+	InventoryItemGetByIDs(ctx *models.Context, ids []string) ([]*pb.InventoryItem, *models.DBError)
 }

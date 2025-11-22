@@ -178,3 +178,58 @@ func (is *InventoryStore) InventoryItemUpdate(ctx *models.Context, tx pgx.Tx, id
 
 	return models.HandleDBError(ctx, err, "inventory.store.InventoryItemUpdate", tx)
 }
+
+// InventoryItemGetByIDs gets the inventory items for the given ids
+func (is *InventoryStore) InventoryItemGetByIDs(ctx *models.Context, ids []string) ([]*pb.InventoryItem, *models.DBError) {
+	stmt := `
+		SELECT 
+			id, 
+			product_id,
+			variant_id, 
+			sku,
+			quantity_available, 
+			quantity_reserved, 
+			quantity_total,
+			location_id,
+			metadata,
+			created_at,
+			updated_at
+		FROM inventory_items 
+		WHERE id = ANY($1)
+  `
+
+	rows, err := is.db.Query(ctx.Ctx(), stmt, ids)
+	if err != nil {
+		return nil, models.HandleDBError(ctx, err, "inventory.store.InventoryItemGetByIDs", nil)
+	}
+	defer rows.Close()
+
+	result := make([]*pb.InventoryItem, 0)
+	for rows.Next() {
+		var ii pb.InventoryItem
+		var updatedAt int64
+		err := rows.Scan(
+			&ii.Id,
+			&ii.ProductId,
+			&ii.VariantId,
+			&ii.Sku,
+			&ii.QuantityAvailable,
+			&ii.QuantityReserved,
+			&ii.QuantityTotal,
+			&ii.LocationId,
+			&ii.Metadata,
+			&ii.CreatedAt,
+			&updatedAt,
+		)
+		if err != nil {
+			return nil, models.HandleDBError(ctx, err, "inventory.store.InventoryItemGetByIDs", nil)
+		}
+
+		if updatedAt > 0 {
+			ii.UpdatedAt = &updatedAt
+		}
+		result = append(result, &ii)
+	}
+
+	return result, nil
+}
