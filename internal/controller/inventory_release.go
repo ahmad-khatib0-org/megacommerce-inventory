@@ -40,7 +40,10 @@ func (c *Controller) InventoryRelease(ctx context.Context, req *pb.InventoryRele
 	modelsCtx.Context = rctx
 
 	ar := models.AuditRecordNew(modelsCtx, modelsInt.EventNameInventoryRelease, models.EventStatusFail)
-	defer c.ProcessAudit(ar)
+	defer func() {
+		ar.AuditEventDataPriorState(map[string]any{"reservation_token": req.ReservationToken})
+		c.ProcessAudit(ar)
+	}()
 
 	tx, err := c.store.GetTx(modelsCtx.Context, pgx.TxOptions{})
 	if err != nil {
@@ -58,8 +61,8 @@ func (c *Controller) InventoryRelease(ctx context.Context, req *pb.InventoryRele
 	}
 
 	// Check if reservation is already released or fulfilled
-	if reservation.Status == pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RELEASED.String() ||
-		reservation.Status == pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_FULFILLED.String() {
+	if reservation.Status == modelsInt.GetInventoryReservationStatus(pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RELEASED) ||
+		reservation.Status == modelsInt.GetInventoryReservationStatus(pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_FULFILLED) {
 		return errBuilder(models.NewAppError(modelsCtx, path, "inventory.reservation.already_processed", nil, "", int(codes.InvalidArgument), nil), tx)
 	}
 
@@ -75,16 +78,16 @@ func (c *Controller) InventoryRelease(ctx context.Context, req *pb.InventoryRele
 		if errDB != nil {
 			return internalErr(err, "failed to release inventory", tx)
 		}
+		// TODO: this should not happen, and should be added to DLQ to be reviewed
 		if !released {
-			// TODO: this should not happen, and should be added to DLQ to be reviewed
 			msg := "The requested quantity to be released is bigger than the quantity_reserved value"
 			return internalErr(err, fmt.Sprintf("failed to release inventory, %s", msg), tx)
 		}
 	}
 
 	// Update reservation status
-	err = c.store.InventoryReservationUpdateStatus(modelsCtx, tx, reservation.Id, pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RELEASED.String())
-	if err != nil {
+	released := modelsInt.GetInventoryReservationStatus(pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RELEASED)
+	if err = c.store.InventoryReservationUpdateStatus(modelsCtx, tx, reservation.Id, released); err != nil {
 		return internalErr(err, "failed to update reservation status", tx)
 	}
 

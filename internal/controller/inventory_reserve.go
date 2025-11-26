@@ -45,17 +45,16 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 		c.ProcessAudit(ar)
 	}()
 
-	ttlSeconds := req.GetTtlSeconds()
-	if ttlSeconds == 0 {
-		ttlSeconds = 60
-	}
-	expiresAt := time.Now().Add(time.Duration(ttlSeconds) * time.Second).Unix()
-
-	// Begin transaction
 	tx, err := c.store.GetTx(modelsCtx.Context, pgx.TxOptions{})
 	if err != nil {
 		return internalErr(err, "failed to begin transaction", nil)
 	}
+
+	ttlSeconds := req.GetTtlSeconds()
+	if ttlSeconds == 0 {
+		ttlSeconds = 60
+	}
+	expiresAt := utils.TimeGetMillisFromTime(time.Now().Add(time.Duration(ttlSeconds) * time.Second))
 
 	// Create reservation record
 	reservationID := utils.NewID()
@@ -66,7 +65,7 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 		OrderId:          req.GetOrderId(),
 		Status:           intModels.GetInventoryReservationStatus(pb.InventoryReservationStatus_INVENTORY_RESERVATION_STATUS_RESERVED),
 		ExpiresAt:        expiresAt,
-		CreatedAt:        time.Now().Unix(),
+		CreatedAt:        utils.TimeGetMillis(),
 	})
 	if err != nil {
 		return internalErr(err, "failed to create reservation", tx)
