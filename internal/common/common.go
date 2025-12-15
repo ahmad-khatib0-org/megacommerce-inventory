@@ -43,7 +43,7 @@ func (cc *CommonClient) initCommonClient() *models.InternalError {
 	target := cc.cfg.Service.CommonServiceGrpcURL
 
 	ie := func(err error, msg string) *models.InternalError {
-		return &models.InternalError{Path: "user.common.initCommonClient", Err: err, Msg: msg}
+		return &models.InternalError{Path: "inventory.common.initCommonClient", Err: err, Msg: msg}
 	}
 
 	if _, err := net.ResolveTCPAddr("tcp", target); err != nil {

@@ -48,7 +48,7 @@ func NewController(ca *ControllerArgs) (*Controller, *models.InternalError) {
 	c.http = utils.GetHTTPClient()
 
 	ie := func(err error, msg string) *models.InternalError {
-		return &models.InternalError{Path: "user.controller.NewController", Err: err, Msg: msg}
+		return &models.InternalError{Path: "inventory.controller.NewController", Err: err, Msg: msg}
 	}
 
 	defaultLang := c.config().Localization.GetDefaultClientLocale()
@@ -61,13 +61,9 @@ func NewController(ca *ControllerArgs) (*Controller, *models.InternalError) {
 		grpc.ChainUnaryInterceptor(
 			models.ResponseInterceptor(defaultLang, availableLangs),
 			models.UnaryMetadataInterceptor(defaultLang, availableLangs),
-			// c.metrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(traceID)),
-			// selector.UnaryServerInterceptor(auth.UnaryServerInterceptor(authMiddleware), selector.MatchFunc(authMatcher)),
 		),
 		grpc.ChainStreamInterceptor(
 			models.StreamMetadataInterceptor(defaultLang, availableLangs),
-			// c.metrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(traceID)),
-			// selector.StreamServerInterceptor(auth.StreamServerInterceptor(authMiddleware), selector.MatchFunc(authMatcher)),
 		),
 	)
 

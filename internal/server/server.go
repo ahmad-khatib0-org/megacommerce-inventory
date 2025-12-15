@@ -59,6 +59,7 @@ func RunServer(s *ServerArgs) error {
 		TracerProvider: srv.tracerProvider,
 		Metrics:        srv.metrics,
 		Log:            srv.log,
+		DBStore:        srv.dbStore,
 	})
 	if err != nil {
 		srv.errors <- err

@@ -14,7 +14,7 @@ func (cc *CommonClient) ConfigGet() (*com.Config, *models.InternalError) {
 	defer cancel()
 
 	ie := func(err error, msg string) *models.InternalError {
-		return &models.InternalError{Path: "user.common.ConfigGet", Err: err, Msg: msg}
+		return &models.InternalError{Path: "inventory.common.ConfigGet", Err: err, Msg: msg}
 	}
 
 	res, err := cc.client.ConfigGet(ctx, &com.ConfigGetRequest{})
@@ -39,7 +39,7 @@ func (cc *CommonClient) ConfigListener(clientID string) *models.InternalError {
 	defer cancel()
 
 	ie := func(err error, msg string) *models.InternalError {
-		return &models.InternalError{Path: "user.common.ConfigListener", Err: err, Msg: msg}
+		return &models.InternalError{Path: "inventory.common.ConfigListener", Err: err, Msg: msg}
 	}
 
 	stream, err := cc.client.ConfigListener(ctx, &com.ConfigListenerRequest{ClientId: clientID})

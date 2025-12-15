@@ -2,6 +2,7 @@
 package models
 
 const (
+	EventNameInventoryList    = "inventory_list"
 	EventNameInventoryReserve = "inventory_reserve"
 	EventNameInventoryRelease = "inventory_release"
 	EventNameInventoryGet     = "inventory_get"
