@@ -39,6 +39,8 @@ type InventoryDBStore interface {
 	InventoryMovementCreate(ctx *models.Context, tx pgx.Tx, params *pb.InventoryMovement) *models.DBError
 	// InventoryItemGetByIDs gets the inventory items for the given ids
 	InventoryItemGetByIDs(ctx *models.Context, ids []string) ([]*pb.InventoryItem, *models.DBError)
+	// InventoryItemGetByID gets a single inventory item by ID, verifying the user owns it
+	InventoryItemGetByID(ctx *models.Context, userID string, itemID string) (*pb.InventoryListItem, *models.DBError)
 	// InventoryList gets a paginated list of inventory items for a supplier using cursor-based pagination
 	InventoryList(ctx *models.Context, userID string, limit int32, lastID string) ([]*pb.InventoryListItem, *models.DBError)
 }

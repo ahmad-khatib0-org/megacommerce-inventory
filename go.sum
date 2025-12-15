@@ -1,5 +1,7 @@
 github.com/ahmad-khatib0-org/megacommerce-proto v0.4.61 h1:YH3LI1IDf5cSPc8c+Q9QwAMaus1wiS6kRt5sQ5o/K6Q=
 github.com/ahmad-khatib0-org/megacommerce-proto v0.4.61/go.mod h1:SlGKyd2+oVzcuzhBg6yzo4bUufJ0LVrF/oXK9aFaJwg=
+github.com/ahmad-khatib0-org/megacommerce-proto v0.4.62 h1:SYBnPslP4+OtKbF3ssTxHJB9l70FsTAvN9xg32w2Fvg=
+github.com/ahmad-khatib0-org/megacommerce-proto v0.4.62/go.mod h1:SlGKyd2+oVzcuzhBg6yzo4bUufJ0LVrF/oXK9aFaJwg=
 github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.22 h1:G+ZZCGPEb5ap+NfHEYJSzAZmbH8NmqARcKi2wHMI4n8=
 github.com/ahmad-khatib0-org/megacommerce-shared-go v0.1.22/go.mod h1:IRj0OGBPXuCiFjRNwBekFRhidZ95NlBLjOz+DjqSuIU=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
