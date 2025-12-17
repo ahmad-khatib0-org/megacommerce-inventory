@@ -2,5 +2,4 @@
 service:
   env: dev
   grpc_url: 0.0.0.0:50056
-  common_service_grpc_url: localhost:50051
-#
+  common_service_grpc_url: common-service:50051

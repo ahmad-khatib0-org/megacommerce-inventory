@@ -9,7 +9,21 @@ import (
 	"github.com/ahmad-khatib0-org/megacommerce-shared-go/pkg/models"
 )
 
-func (cc *CommonClient) ConfigGet() (*com.Config, *models.InternalError) {
+func (cc *CommonClient) GetServiceEnv() com.Environment {
+	env := cc.cfg.Service.Env
+	switch env {
+	case "local":
+		return com.Environment_LOCAL
+	case "dev":
+		return com.Environment_DEV
+	case "production":
+		return com.Environment_PRODUCTION
+	default:
+		return com.Environment_DEV
+	}
+}
+
+func (cc *CommonClient) ConfigGet(env com.Environment) (*com.Config, *models.InternalError) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
@@ -17,7 +31,7 @@ func (cc *CommonClient) ConfigGet() (*com.Config, *models.InternalError) {
 		return &models.InternalError{Path: "inventory.common.ConfigGet", Err: err, Msg: msg}
 	}
 
-	res, err := cc.client.ConfigGet(ctx, &com.ConfigGetRequest{})
+	res, err := cc.client.ConfigGet(ctx, &com.ConfigGetRequest{Env: env})
 	if err != nil {
 		return nil, ie(err, "failed to get configurations from common service")
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Server) initSharedConfig() {
-	config, err := s.commonClient.ConfigGet()
+	config, err := s.commonClient.ConfigGet(s.commonClient.GetServiceEnv())
 	if err != nil {
 		s.errors <- err
 	}
