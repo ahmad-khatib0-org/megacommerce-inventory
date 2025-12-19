@@ -15,6 +15,7 @@ import (
 
 // InventoryUpdate updates inventory levels
 func (c *Controller) InventoryUpdate(ctx context.Context, req *pb.InventoryUpdateRequest) (*pb.InventoryUpdateResponse, error) {
+	startTime := time.Now()
 	path := "inventory.controller.InventoryUpdate"
 	modelsCtx, ctxErr := models.ContextGet(ctx)
 	errBuilder := func(e *models.AppError, tx pgx.Tx) (*pb.InventoryUpdateResponse, error) {
@@ -22,6 +23,8 @@ func (c *Controller) InventoryUpdate(ctx context.Context, req *pb.InventoryUpdat
 			rbErr := tx.Rollback(modelsCtx.Context)
 			c.log.Errorf("%s: an error rolling back a transaction, err: %s", path, rbErr.Error())
 		}
+		duration := time.Since(startTime).Seconds()
+		c.metricsCollector.RecordInventoryUpdateRequest(false, duration)
 		return &pb.InventoryUpdateResponse{Response: &pb.InventoryUpdateResponse_Error{Error: models.AppErrorToProto(e)}}, nil
 	}
 
@@ -126,6 +129,9 @@ func (c *Controller) InventoryUpdate(ctx context.Context, req *pb.InventoryUpdat
 	}
 
 	ar.Success()
+
+	duration := time.Since(startTime).Seconds()
+	c.metricsCollector.RecordInventoryUpdateRequest(true, duration)
 
 	msg := models.Tr(modelsCtx.AcceptLanguage, "inventory.update.success", nil)
 	return sucBuilder(&pbSh.SuccessResponseData{Message: &msg})

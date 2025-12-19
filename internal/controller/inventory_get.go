@@ -12,10 +12,13 @@ import (
 
 // InventoryGet returns a single inventory item by ID
 func (c *Controller) InventoryGet(ctx context.Context, req *pb.InventoryGetRequest) (*pb.InventoryGetResponse, error) {
+	startTime := time.Now()
 	path := "inventory.controller.InventoryGet"
 	modelsCtx, ctxErr := models.ContextGet(ctx)
 
 	errBuilder := func(e *models.AppError) (*pb.InventoryGetResponse, error) {
+		duration := time.Since(startTime).Seconds()
+		c.metricsCollector.RecordInventoryGetRequest(false, duration)
 		return &pb.InventoryGetResponse{Response: &pb.InventoryGetResponse_Error{Error: models.AppErrorToProto(e)}}, nil
 	}
 	if ctxErr != nil {
@@ -45,6 +48,9 @@ func (c *Controller) InventoryGet(ctx context.Context, req *pb.InventoryGetReque
 		return internalErr(err, "failed to get inventory item")
 	}
 	ar.Success()
+
+	duration := time.Since(startTime).Seconds()
+	c.metricsCollector.RecordInventoryGetRequest(true, duration)
 
 	return &pb.InventoryGetResponse{
 		Response: &pb.InventoryGetResponse_Data{Data: &pb.InventoryGetResponseData{Item: item}},

@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/otel"
 	"github.com/ahmad-khatib0-org/megacommerce-inventory/internal/store"
 	common "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/common/v1"
 	pb "github.com/ahmad-khatib0-org/megacommerce-proto/gen/go/inventory/v1"
@@ -20,12 +21,13 @@ import (
 
 type Controller struct {
 	pb.UnimplementedInventoryServiceServer
-	config         func() *common.Config
-	tracerProvider *sdktrace.TracerProvider
-	metrics        *grpcprom.ServerMetrics
-	log            *logger.Logger
-	http           *http.Client
-	store          store.InventoryDBStore
+	config           func() *common.Config
+	tracerProvider   *sdktrace.TracerProvider
+	metrics          *grpcprom.ServerMetrics
+	metricsCollector *MetricsCollector
+	log              *logger.Logger
+	http             *http.Client
+	store            store.InventoryDBStore
 }
 
 type ControllerArgs struct {
@@ -37,12 +39,20 @@ type ControllerArgs struct {
 }
 
 func NewController(ca *ControllerArgs) (*Controller, *models.InternalError) {
+	// Initialize OpenTelemetry
+	if _, _, err := otel.InitOTEL("megacommerce-inventory"); err != nil {
+		return nil, &models.InternalError{Path: "inventory.controller.NewController", Err: err, Msg: "failed to initialize OTEL"}
+	}
+	// Setup Prometheus metrics endpoint on port 8065
+	otel.SetupPrometheusMetrics("8065")
+
 	c := &Controller{
-		config:         ca.Config,
-		tracerProvider: ca.TracerProvider,
-		metrics:        ca.Metrics,
-		log:            ca.Log,
-		store:          ca.DBStore,
+		config:           ca.Config,
+		tracerProvider:   ca.TracerProvider,
+		metrics:          ca.Metrics,
+		metricsCollector: NewMetricsCollector(),
+		log:              ca.Log,
+		store:            ca.DBStore,
 	}
 
 	c.http = utils.GetHTTPClient()

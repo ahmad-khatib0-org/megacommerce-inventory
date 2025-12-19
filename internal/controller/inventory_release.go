@@ -15,6 +15,7 @@ import (
 
 // InventoryRelease releases inventory reservation
 func (c *Controller) InventoryRelease(ctx context.Context, req *pb.InventoryReleaseRequest) (*pb.InventoryReleaseResponse, error) {
+	startTime := time.Now()
 	path := "inventory.controller.InventoryRelease"
 	modelsCtx, ctxErr := models.ContextGet(ctx)
 	errBuilder := func(e *models.AppError, tx pgx.Tx) (*pb.InventoryReleaseResponse, error) {
@@ -22,6 +23,8 @@ func (c *Controller) InventoryRelease(ctx context.Context, req *pb.InventoryRele
 			rbErr := tx.Rollback(modelsCtx.Context)
 			c.log.Errorf("%s: an error rolling back a transaction, err: %s", path, rbErr.Error())
 		}
+		duration := time.Since(startTime).Seconds()
+		c.metricsCollector.RecordInventoryReleaseRequest(false, duration, 0)
 		return &pb.InventoryReleaseResponse{Response: &pb.InventoryReleaseResponse_Error{Error: models.AppErrorToProto(e)}}, nil
 	}
 
@@ -97,6 +100,9 @@ func (c *Controller) InventoryRelease(ctx context.Context, req *pb.InventoryRele
 	}
 
 	ar.Success()
+
+	duration := time.Since(startTime).Seconds()
+	c.metricsCollector.RecordInventoryReleaseRequest(true, duration, int64(len(reservationItems)))
 
 	msg := models.Tr(modelsCtx.AcceptLanguage, "inventory.release.success", nil)
 	return sucBuilder(&pbSh.SuccessResponseData{Message: &msg})

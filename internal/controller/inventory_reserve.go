@@ -15,6 +15,7 @@ import (
 
 // InventoryReserve reserves inventory for an order
 func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryReserveRequest) (*pb.InventoryReserveResponse, error) {
+	startTime := time.Now()
 	path := "inventory.controller.InventoryReserve"
 	modelsCtx, ctxErr := models.ContextGet(ctx)
 
@@ -23,6 +24,8 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 			rbErr := tx.Rollback(modelsCtx.Context)
 			c.log.Errorf("%s: an error rolling back a transaction, err: %s", path, rbErr.Error())
 		}
+		duration := time.Since(startTime).Seconds()
+		c.metricsCollector.RecordInventoryReserveRequest(false, duration, 0)
 		return &pb.InventoryReserveResponse{Response: &pb.InventoryReserveResponse_Error{Error: models.AppErrorToProto(e)}}, nil
 	}
 	if ctxErr != nil {
@@ -159,6 +162,9 @@ func (c *Controller) InventoryReserve(ctx context.Context, req *pb.InventoryRese
 	}
 
 	ar.Success()
+
+	duration := time.Since(startTime).Seconds()
+	c.metricsCollector.RecordInventoryReserveRequest(true, duration, int64(len(reservationItems)))
 
 	return sucBuilder(&pb.InventoryReserveResponseData{
 		ReservationToken: reservationToken,

@@ -13,8 +13,11 @@ import (
 
 // InventoryReservationGet gets reservation details
 func (c *Controller) InventoryReservationGet(ctx context.Context, req *pb.InventoryReservationGetRequest) (*pb.InventoryReservationGetResponse, error) {
+	startTime := time.Now()
 	path := "inventory.controller.InventoryReservationGet"
 	errBuilder := func(e *models.AppError) (*pb.InventoryReservationGetResponse, error) {
+		duration := time.Since(startTime).Seconds()
+		c.metricsCollector.RecordInventoryReservationGetRequest(false, duration)
 		return &pb.InventoryReservationGetResponse{Response: &pb.InventoryReservationGetResponse_Error{Error: models.AppErrorToProto(e)}}, nil
 	}
 
@@ -73,6 +76,9 @@ func (c *Controller) InventoryReservationGet(ctx context.Context, req *pb.Invent
 			QuantityReserved:  uint32(item.Quantity),
 		})
 	}
+
+	duration := time.Since(startTime).Seconds()
+	c.metricsCollector.RecordInventoryReservationGetRequest(true, duration)
 
 	return sucBuilder(&pb.InventoryReservationGetResponseData{
 		ReservationToken: reservation.ReservationToken,
